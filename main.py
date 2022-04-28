@@ -7,7 +7,6 @@ from re import I
 import requests
 import contador
 import datetime
-import csv
 import result_to_csv as to_csv
 
 import json
@@ -28,29 +27,24 @@ iniciarFiltro = '?'
 response = requests.get(url_base + issue7400 + iniciarFiltro + sustentacao + addfiltro + notas, auth=('login', 'senha'))
 '''
 
+def feriados_lista_out(feriados_lista):
+    all_feriados = []
+    for feriado in feriados_lista:
+        feriado_split = feriado.split("/")
+        dia = int(feriado_split[0])
+        mes = int(feriado_split[1]) 
+        ano = int(feriado_split[2])
+        data_feriado = datetime.date(day=dia, month=mes, year=ano)
+        all_feriados.append(data_feriado)
+    
+    return all_feriados
+
 if __name__ == '__main__':
     offset_numero = 0
     issues_resolved_list = []
 
-    all_feriados = []
     feriados_2021=["01/01/2021", "15/02/2021", "16/02/2021", "17/02/2021", "02/04/2021", "21/04/2021", "01/05/2021", "03/06/2021", "07/09/2021", "12/10/2021", "28/10/2021", "02/11/2021", "15/11/2021", "24/12/2021", "25/12/2021", "31/12/2021"]
-    feriados_2022=["01/01/2022", "28/02/2022", "01/03/2022", "02/03/2022", "15/04/2022", "21/04/2022", "01/05/2022", "16/06/2022", "07/09/2022", "12/10/2022", "28/10/2022", "02/11/2022", "15/11/2022", "25/12/2022"]
-
-    for feriado in feriados_2021:
-        feriado_split = feriado.split("/")
-        dia = int(feriado_split[0])
-        mes = int(feriado_split[1]) 
-        ano = int(feriado_split[2])
-        data_feriado_1 = datetime.date(day=dia, month=mes, year=ano)
-        all_feriados.append(data_feriado_1)
-
-    for feriado in feriados_2022:
-        feriado_split = feriado.split("/")
-        dia = int(feriado_split[0])
-        mes = int(feriado_split[1]) 
-        ano = int(feriado_split[2])
-        data_feriado_1 = datetime.date(day=dia, month=mes, year=ano)
-        all_feriados.append(data_feriado_1)
+    feriados_2022=["01/01/2022", "28/02/2022", "01/03/2022", "02/03/2022", "15/04/2022", "21/04/2022", "22/04/2022", "01/05/2022", "16/06/2022", "07/09/2022", "12/10/2022", "28/10/2022", "02/11/2022", "15/11/2022", "25/12/2022"]
 
     # percorre por 10 paginas com 50 issues cada
     percorre_quantas_paginas = 10
@@ -117,7 +111,8 @@ if __name__ == '__main__':
             """
             dias_feriados.append(data_feriado_date )
     
-    dias_feriados.extend(all_feriados)
+    dias_feriados.extend(feriados_lista_out(feriados_2021))
+    dias_feriados.extend(feriados_lista_out(feriados_2022))
 
     for i in range(percorre_quantas_paginas):
 

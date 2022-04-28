@@ -5,7 +5,6 @@ from getpass import getpass
 import datetime
 import numpy as np
 import json
-import csv
 import result_to_csv as to_csv
 
 from setuptools import PEP420PackageFinder
@@ -213,7 +212,6 @@ def time_counter(fabrica_users, journals_data, data_de_criacao, lista_feriados):
 
         lista_delta_tempo.append((delta_tempo_lista,holidays_list, saturdays_list, sundays_list))
 
-
     lista_delta_tempo_pos = []
 
     data_de_entrega = '-' 
@@ -269,7 +267,6 @@ def time_counter(fabrica_users, journals_data, data_de_criacao, lista_feriados):
                 data_de_entrega = lista_terminos_date[i]
 
         else:
-
 
             tempo_1 = delta_tempo_inicial(lista_inicios_date[i])
                 
@@ -485,31 +482,31 @@ def execute(tarefa, feriados, auth_params, usuarios_da_fabrica):
         print()
 
     return  types_of_priorities[str(journals_priority)], sla_result, delta_time_sla, diff_sla, atuou_em_feriados_ou_finais_de_semana, project, primeira_atribuicao, data_de_entrega, data_resolvido
+
+def feriados_lista_out(feriados_lista):
+    all_feriados = []
+    for feriado in feriados_lista:
+        feriado_split = feriado.split("/")
+        dia = int(feriado_split[0])
+        mes = int(feriado_split[1]) 
+        ano = int(feriado_split[2])
+        data_feriado = datetime.date(day=dia, month=mes, year=ano)
+        all_feriados.append(data_feriado)
+    
+    return all_feriados
+
     
 if __name__ == '__main__':
     #tarefa = 7489
     # Para testes 7612
     tarefa = 7461
 
-    all_feriados = []
     feriados_2021=["01/01/2021", "15/02/2021", "16/02/2021", "17/02/2021", "02/04/2021", "21/04/2021", "01/05/2021", "03/06/2021", "07/09/2021", "12/10/2021", "28/10/2021", "02/11/2021", "15/11/2021", "24/12/2021", "25/12/2021", "31/12/2021"]
     feriados_2022=["01/01/2022", "28/02/2022", "01/03/2022", "02/03/2022", "15/04/2022", "21/04/2022", "01/05/2022", "16/06/2022", "07/09/2022", "12/10/2022", "28/10/2022", "02/11/2022", "15/11/2022", "25/12/2022"]
 
-    for feriado in feriados_2021:
-        feriado_split = feriado.split("/")
-        dia = int(feriado_split[0])
-        mes = int(feriado_split[1]) 
-        ano = int(feriado_split[2])
-        data_feriado = datetime.date(day=dia, month=mes, year=ano)
-        all_feriados.append(data_feriado)
-
-    for feriado in feriados_2022:
-        feriado_split = feriado.split("/")
-        dia = int(feriado_split[0])
-        mes = int(feriado_split[1]) 
-        ano = int(feriado_split[2])
-        data_feriado = datetime.date(day=dia, month=mes, year=ano)
-        all_feriados.append(data_feriado)
+    dias_feriados = [] 
+    dias_feriados.extend(feriados_lista_out(feriados_2021))
+    dias_feriados.extend(feriados_lista_out(feriados_2022))
 
     # dias_feriado = all_feriados
 
@@ -523,6 +520,8 @@ if __name__ == '__main__':
     # dias_feriado = [datetime.date(2021,11,15), datetime.date(2021,12,24), datetime.date(2021,12,25), datetime.date(2022,1,1)]
     # dias_feriado = [datetime.date(2021,12,24)]
     # moving data center 27/01/2022 20:05 as 03/02/2022 20:00
+
+    dias_feriado.extend(dias_feriados)
 
     #tarefa = 7358
     #dias_feriado = []
