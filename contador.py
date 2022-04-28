@@ -1,10 +1,12 @@
 from collections import UserList
 import requests
 import math
+from getpass import getpass
 import datetime
 import numpy as np
 import json
 import csv
+import result_to_csv as to_csv
 
 from setuptools import PEP420PackageFinder
 
@@ -137,6 +139,7 @@ def time_counter(fabrica_users, journals_data, data_de_criacao, lista_feriados):
 
     atuou_em_feriados_ou_finais_de_semana = False
 
+    # Identifica se o chamado foi aberto ja atribuindo alguem da fabrica
     primeiro_eh_fabrica= esta_na_lista(primeiro_atribuido, fabrica_users)
 
     lista_inicios = []
@@ -176,13 +179,16 @@ def time_counter(fabrica_users, journals_data, data_de_criacao, lista_feriados):
     for inicio in lista_inicios_str_tratamento:
         lista_inicios_date.append(datetime.datetime.fromisoformat(inicio))  
     
+    if lista_inicios_date:
+        primeira_atribuicao = lista_inicios_date[0]
+        primeira_atribuicao = primeira_atribuicao - datetime.timedelta(hours=3)
+    else:
+        primeira_atribuicao = "-"
+    
     for termino in lista_terminos_str_tratamento:
         lista_terminos_date.append(datetime.datetime.fromisoformat(termino))
 
     for i in range(len(lista_inicios)):
-
-        sabado = False
-        domingo = False
 
         delta_tempo_lista = lista_terminos_date[i].date() - lista_inicios_date[i].date()
 
@@ -198,16 +204,22 @@ def time_counter(fabrica_users, journals_data, data_de_criacao, lista_feriados):
             for i in range(len(sundays_list)):
                 delta_tempo_lista = delta_tempo_lista - datetime.timedelta(days=1) 
 
-
         if holidays_list:
-            for i in range(len(holidays_list)):
-                delta_tempo_lista = delta_tempo_lista - datetime.timedelta(days=1) 
-        
+            for holiday in holidays_list:
+                if ((not (holiday in saturdays_list)) and (not (holiday in sundays_list))):
+                    atuou_em_feriados_ou_finais_de_semana = True
+                    delta_tempo_lista = delta_tempo_lista - datetime.timedelta(days=1) 
+                    print("Atuou em feriados") 
+
         lista_delta_tempo.append((delta_tempo_lista,holidays_list, saturdays_list, sundays_list))
 
+
     lista_delta_tempo_pos = []
+
+    data_de_entrega = '-' 
     
     for i in range(len(lista_inicios)):
+        
         if lista_delta_tempo[i][0].days < 2:
 
             if lista_delta_tempo[i][0].days == 1:
@@ -218,33 +230,46 @@ def time_counter(fabrica_users, journals_data, data_de_criacao, lista_feriados):
 
                 lista_delta_tempo_pos.append(tempo_1 + tempo_2)
 
+                data_de_entrega = lista_terminos_date[i]
+
             if lista_delta_tempo[i][0].days == 0:
 
                 if lista_delta_tempo[i][1] or lista_delta_tempo[i][2] or lista_delta_tempo[i][3]:
                     for j in range(1, 4, 1):
-                        if lista_delta_tempo[i][j] == lista_inicios_date[i]:
 
-                            tempo_2 = delta_tempo_termino(lista_terminos_date[i])
+                        if lista_delta_tempo[i][j]:
+                            if lista_delta_tempo[i][j][0] == lista_inicios_date[i].date():
 
-                            lista_delta_tempo_pos.append(tempo_2)
-                        
-                        if lista_delta_tempo[i][j] == lista_terminos_date[i]:
+                                tempo_2 = delta_tempo_termino(lista_terminos_date[i])
 
-                            tempo_1 = delta_tempo_inicial(lista_inicios_date[i])
+                                lista_delta_tempo_pos.append(tempo_2)
+                                
+                                data_de_entrega = lista_terminos_date[i]
+                            
+                            if lista_delta_tempo[i][j][0] == lista_terminos_date[i].date():
 
-                            lista_delta_tempo_pos.append(tempo_1)
+                                tempo_1 = delta_tempo_inicial(lista_inicios_date[i])
+
+                                lista_delta_tempo_pos.append(tempo_1)
+
+                                data_de_entrega = datetime.datetime.combine(lista_inicios_date[i].date(), datetime.time(hour=23)) 
+
                 else:
                     lista_delta_tempo_pos.append(lista_terminos_date[i] - lista_inicios_date[i])
-                
+
+                    data_de_entrega = lista_terminos_date[i]
 
             if lista_delta_tempo[i][0].days < 0:
-                print("Atuou em feriados ou finais de semana")
+                print("Atuou em feriados e/ou finais de semana")
                 
                 atuou_em_feriados_ou_finais_de_semana = True 
 
                 lista_delta_tempo_pos.append(datetime.timedelta(hours=0))
 
+                data_de_entrega = lista_terminos_date[i]
+
         else:
+
 
             tempo_1 = delta_tempo_inicial(lista_inicios_date[i])
                 
@@ -253,31 +278,36 @@ def time_counter(fabrica_users, journals_data, data_de_criacao, lista_feriados):
             tempo_2 = datetime.timedelta(hours=12)*(lista_delta_tempo[i][0] - datetime.timedelta(days=1)).days
 
             lista_delta_tempo_pos.append(tempo_1 + tempo_3 + tempo_2)
+
+            data_de_entrega = lista_terminos_date[i]
     
     tempo_total = datetime.timedelta(hours=0)
+
+    if not isinstance(data_de_entrega, str):
+        data_de_entrega = data_de_entrega - datetime.timedelta(hours=3)
 
     for tempo in lista_delta_tempo_pos:
         tempo_total = tempo_total + tempo
 
-    return tempo_total,atuou_em_feriados_ou_finais_de_semana
+    return tempo_total,atuou_em_feriados_ou_finais_de_semana, primeira_atribuicao, data_de_entrega
 
 def delta_tempo_inicial(lista_inicios_date):
     tempo_23h = datetime.datetime.combine(lista_inicios_date.date(), datetime.time(hour=23))
     tempo_1 = tempo_23h - lista_inicios_date
-    if tempo_1.seconds > 12*3600:
-        tempo_1 = datetime.timedelta(hours=12)
-    elif tempo_1.days < 0:
+    if tempo_1.days < 0:
         tempo_1 = datetime.timedelta(hours=0)
+    elif tempo_1.seconds > 12*3600:
+        tempo_1 = datetime.timedelta(hours=12)
 
     return tempo_1
 
 def delta_tempo_termino(lista_terminos_date):
     tempo_11h = datetime.datetime.combine(lista_terminos_date.date(), datetime.time(hour=11))
     tempo_2 = lista_terminos_date - tempo_11h
-    if tempo_2.seconds > 12*3600:
-        tempo_2 = datetime.timedelta(hours=12)
-    elif tempo_2.days < 0:
+    if tempo_2.days < 0:
         tempo_2 = datetime.timedelta(hours=0)
+    elif tempo_2.seconds > 12*3600:
+        tempo_2 = datetime.timedelta(hours=12)
 
     return tempo_2
 
@@ -300,6 +330,41 @@ def sla_verification(sla_especification, prioridade, delta_time):
         else:
             diff = sla_time_priority - delta_time
         return (True, delta_time, diff)
+
+
+def get_data_resolvida(lista_de_journals):
+
+    status_resolvido = "3"
+    
+    data_resolvido = ""
+
+    for journal in lista_de_journals:
+        
+        # Cada nota tem detalhes
+        detalhes_journal = journal["details"]
+        journal_data = [] 
+
+        break_loop = False
+
+        # Cada detalhe é um atributo da nota
+        for detalhe in detalhes_journal:
+                
+            # Quebra o loop se estiver com o status de homologado 
+            if "status_id" in detalhe.values():
+                if detalhe["new_value"] == status_resolvido:
+                    data_resolvido = journal["created_on"]
+                    break_loop = True
+        
+        if break_loop:
+            break
+    
+    data_resolvido_str = data_resolvido.replace("Z","")
+
+    data_resolvido_date = datetime.datetime.fromisoformat(data_resolvido_str)
+
+    data_resolvido_date = data_resolvido_date - datetime.timedelta(hours=3)
+
+    return data_resolvido_date
 
 def execute(tarefa, feriados, auth_params, usuarios_da_fabrica):
     url_base = 'https://redmine.iphan.gov.br/redmine'
@@ -384,14 +449,20 @@ def execute(tarefa, feriados, auth_params, usuarios_da_fabrica):
 
     journals_priority = journals_data[0][3]
 
+
+    data_resolvido = get_data_resolvida(lista_de_journals)
     
     types_of_priorities = list_of_priorities(auth_user)
 
-    delta_time, atuou_em_feriados_ou_finais_de_semana = time_counter(usuarios_da_fabrica, journals_data, data_de_criacao_do_chamado, feriados)
+    delta_time, atuou_em_feriados_ou_finais_de_semana, primeira_atribuicao, data_de_entrega = time_counter(usuarios_da_fabrica, journals_data, data_de_criacao_do_chamado, feriados)
 
     sla_pass, delta_time_sla, diff_sla = sla_verification(sla_especification, journals_priority , delta_time)
 
     sla_result = 0
+
+    print("Data de atribuição: ", primeira_atribuicao)
+    print("Data de entrega: ", data_de_entrega)
+    print("Data de resolução: ", data_resolvido)
 
     if sla_pass:
         sla_result = 1
@@ -413,49 +484,50 @@ def execute(tarefa, feriados, auth_params, usuarios_da_fabrica):
         .format(types_of_priorities[str(journals_priority)],diff_sla))
         print()
 
-    return  types_of_priorities[str(journals_priority)], sla_result, delta_time_sla, diff_sla, atuou_em_feriados_ou_finais_de_semana, project
+    return  types_of_priorities[str(journals_priority)], sla_result, delta_time_sla, diff_sla, atuou_em_feriados_ou_finais_de_semana, project, primeira_atribuicao, data_de_entrega, data_resolvido
     
-def result_to_csv(issue, result):
-
-    # result retorno
-    # types_of_priorities[str(journals_priority)], sla_result, delta_time_sla, diff_sla, atuou_em_feriados_ou_finais_de_semana 
-
-    passou_result = "-"
-    sla_result = "FALSE"
-
-    if result[1] == 0 :
-        passou_result = str(result[3]) 
-
-    if result[1] == 1 :
-        sla_result = "TRUE"    
-    
-    if result[1] == 2 :
-        sla_result = "NÂO ATUOU"
-
-    dict_row = {
-        "Tarefa": str(issue),
-        "Sistema": str(result[5]),
-        "Prioridade":str(result[0]),
-        "SLA": sla_result,
-        "Delta_tempo":str(result[2]),
-        "Passou": passou_result,
-        "Feriado":str(result[4]) 
-        }
-        
-    with open('sla_result.csv', 'w', newline='') as csvfile:
-        fieldnames = ['Tarefa','Sistema', 'Prioridade', 'SLA', 'Delta_tempo','Passou', 'Feriado']
-        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-
-        writer.writeheader()
-        writer.writerow(dict_row)
-
 if __name__ == '__main__':
-    tarefa = 7489
+    #tarefa = 7489
     # Para testes 7612
-    dias_feriado = [datetime.date(2022,2,15)]
+    tarefa = 7461
+
+    all_feriados = []
+    feriados_2021=["01/01/2021", "15/02/2021", "16/02/2021", "17/02/2021", "02/04/2021", "21/04/2021", "01/05/2021", "03/06/2021", "07/09/2021", "12/10/2021", "28/10/2021", "02/11/2021", "15/11/2021", "24/12/2021", "25/12/2021", "31/12/2021"]
+    feriados_2022=["01/01/2022", "28/02/2022", "01/03/2022", "02/03/2022", "15/04/2022", "21/04/2022", "01/05/2022", "16/06/2022", "07/09/2022", "12/10/2022", "28/10/2022", "02/11/2022", "15/11/2022", "25/12/2022"]
+
+    for feriado in feriados_2021:
+        feriado_split = feriado.split("/")
+        dia = int(feriado_split[0])
+        mes = int(feriado_split[1]) 
+        ano = int(feriado_split[2])
+        data_feriado = datetime.date(day=dia, month=mes, year=ano)
+        all_feriados.append(data_feriado)
+
+    for feriado in feriados_2022:
+        feriado_split = feriado.split("/")
+        dia = int(feriado_split[0])
+        mes = int(feriado_split[1]) 
+        ano = int(feriado_split[2])
+        data_feriado = datetime.date(day=dia, month=mes, year=ano)
+        all_feriados.append(data_feriado)
+
+    # dias_feriado = all_feriados
+
+    # 7473 - não atuou
+    # 7358 e 7371 passaram muito
+    # 7461 testar chamados fechados atribuidos no final à global sem serem homologados tem um "feriado" 03/02/2022
+
+    # dias de feriado para testar tarefa 7489
+    # dias_feriado = [datetime.date(2022,2,15)]
+    dias_feriado = [datetime.date(2022,2,3)]
+    # dias_feriado = [datetime.date(2021,11,15), datetime.date(2021,12,24), datetime.date(2021,12,25), datetime.date(2022,1,1)]
+    # dias_feriado = [datetime.date(2021,12,24)]
+    # moving data center 27/01/2022 20:05 as 03/02/2022 20:00
+
+    #tarefa = 7358
     #dias_feriado = []
-    meu_login = ""
-    minha_senha = ""
+    meu_login = input("Digite seu login: ")
+    minha_senha = getpass("Digite sua senha: ")
 
     auth_user = (meu_login, minha_senha)
 
@@ -463,8 +535,8 @@ if __name__ == '__main__':
 
     dict_all_users = counting_users(auth_user)
 
-    # leandro, rhoxanna, mauricio, cristiano, romao, gestor fabrica, desenvolvedor fabrica
-    usuarios_da_fabrica = ['204', '279', '269', '259', '250', '165', '164']
+    # leandro, rhoxanna, mauricio, cristiano, romao, gestor fabrica, desenvolvedor fabrica, sabino
+    usuarios_da_fabrica = ['204', '279', '269', '259', '250', '165', '164', '272']
     
     print("Usuários da Fabrica de Software considerados para a verificação do SLA:")
     print("")
@@ -478,6 +550,6 @@ if __name__ == '__main__':
 
     result_unic = execute(tarefa, dias_feriado, auth_user, usuarios_da_fabrica )
 
-    result_to_csv(tarefa, result_unic)
+    to_csv.result_to_csv([tarefa], [result_unic])
     
     #json_object = json.dumps(dicionario_deconding, indent=4, ensure_ascii=False)

@@ -8,6 +8,7 @@ import requests
 import contador
 import datetime
 import csv
+import result_to_csv as to_csv
 
 import json
 
@@ -27,55 +28,31 @@ iniciarFiltro = '?'
 response = requests.get(url_base + issue7400 + iniciarFiltro + sustentacao + addfiltro + notas, auth=('login', 'senha'))
 '''
 
-def result_to_csv(list_issues, list_results):
-
-    # result retorno
-    # types_of_priorities[str(journals_priority)], sla_result, delta_time_sla, diff_sla, atuou_em_feriados_ou_finais_de_semana 
-
-    if (len(list_issues) == len(list_results)):
-
-        list_rows = []
-
-        for i in range(len(list_issues)):
-
-            passou_result = "-"
-            sla_result = "FALSE"
-
-            if list_results[i][1] == 0 :
-                passou_result = str(list_results[i][3]) 
-
-            if list_results[i][1] == 1 :
-                sla_result = "TRUE"    
-            
-            if list_results[i][1] == 2 :
-                sla_result = "NAO ATUOU"
-
-            dict_row = {
-                "Tarefa": str(list_issues[i]),
-                "Sistema": str(list_results[i][5]),
-                "Prioridade":str(list_results[i][0]),
-                "SLA": sla_result,
-                "Delta_tempo":str(list_results[i][2]),
-                "Passou": passou_result,
-                "Feriado":str(list_results[i][4]) 
-                }
-            
-            list_rows.append(dict_row)
-            
-        with open('sla_results.csv', 'w', newline='') as csvfile:
-            fieldnames = ['Tarefa', 'Sistema', 'Prioridade', 'SLA', 'Delta_tempo','Passou', 'Feriado']
-            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-
-            writer.writeheader()
-            for row in list_rows:
-                writer.writerow(row)
-    else:
-        print("Por algum motivo a lista de tarefas esta maior que a lista de resultados da análise, arquivo não foi gerado")
-
 if __name__ == '__main__':
     offset_numero = 0
     issues_resolved_list = []
-    # Percorre por 10 paginas com 50 issues cada
+
+    all_feriados = []
+    feriados_2021=["01/01/2021", "15/02/2021", "16/02/2021", "17/02/2021", "02/04/2021", "21/04/2021", "01/05/2021", "03/06/2021", "07/09/2021", "12/10/2021", "28/10/2021", "02/11/2021", "15/11/2021", "24/12/2021", "25/12/2021", "31/12/2021"]
+    feriados_2022=["01/01/2022", "28/02/2022", "01/03/2022", "02/03/2022", "15/04/2022", "21/04/2022", "01/05/2022", "16/06/2022", "07/09/2022", "12/10/2022", "28/10/2022", "02/11/2022", "15/11/2022", "25/12/2022"]
+
+    for feriado in feriados_2021:
+        feriado_split = feriado.split("/")
+        dia = int(feriado_split[0])
+        mes = int(feriado_split[1]) 
+        ano = int(feriado_split[2])
+        data_feriado_1 = datetime.date(day=dia, month=mes, year=ano)
+        all_feriados.append(data_feriado_1)
+
+    for feriado in feriados_2022:
+        feriado_split = feriado.split("/")
+        dia = int(feriado_split[0])
+        mes = int(feriado_split[1]) 
+        ano = int(feriado_split[2])
+        data_feriado_1 = datetime.date(day=dia, month=mes, year=ano)
+        all_feriados.append(data_feriado_1)
+
+    # percorre por 10 paginas com 50 issues cada
     percorre_quantas_paginas = 10
 
     url_login = 'https://redmine.iphan.gov.br/redmine/issues.json' 
@@ -103,7 +80,16 @@ if __name__ == '__main__':
     qual_ano = input("Digite o numero do ano que será verificado (AAAA): ")
     print("")
 
-    tem_feriado = input("Esse mês teve algum feriado em dia de semana (s/n): ")
+    print("Feriados 2021: ")
+    print("")
+    print(feriados_2021)
+    print("")
+    print("Feriados 2022: ")
+    print("")
+    print(feriados_2022)
+    print("")
+
+    tem_feriado = input("Você gostaria de adicionar mais algum feriado além dos mencionados acima? (s/n): ")
     print("")
 
     verdadeiro = True
@@ -130,6 +116,8 @@ if __name__ == '__main__':
                 integral = False 
             """
             dias_feriados.append(data_feriado_date )
+    
+    dias_feriados.extend(all_feriados)
 
     for i in range(percorre_quantas_paginas):
 
@@ -155,7 +143,7 @@ if __name__ == '__main__':
 
         dicionario_deconding = json.loads(dicionario)
 
-        # Criar um arquivo resultado mostrando a resposta de cada pagina
+        # criar um arquivo resultado mostrando a resposta de cada pagina
         """
         json_object = json.dumps(dicionario_deconding, indent=4, ensure_ascii=False)
 
@@ -193,10 +181,11 @@ if __name__ == '__main__':
 
     list_of_results = []
 
-    print("Usuários da Fabrica de Software considerados para a verificação do SLA:")
+    print("usuários da Fabrica de Software considerados para a verificação do SLA:")
     print("")
 
-    usuarios_da_fabrica = ['204', '279', '269', '259', '250', '165', '164']
+    # leandro, rhoxanna, mauricio, cristiano, romao, gestor fabrica, desenvolvedor fabrica, sabino
+    usuarios_da_fabrica = ['204', '279', '269', '259', '250', '165', '164', '272']
 
     dict_all_users = contador.counting_users(auth_user)
     for usuario in usuarios_da_fabrica:
@@ -208,7 +197,7 @@ if __name__ == '__main__':
     for issue in issues_resolved_list:
         list_of_results.append(contador.execute(issue, dias_feriados, auth_user, usuarios_da_fabrica))
     
-    result_to_csv(issues_resolved_list, list_of_results)
+    to_csv.result_to_csv(issues_resolved_list, list_of_results)
 
     print("-------------------------------------------------------")
     print("")

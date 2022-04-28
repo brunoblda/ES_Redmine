@@ -34,6 +34,7 @@ MANIFEST
 
 # tirar os arquivos csv
 *.csv
+*.xlsx
 
 # Installer logs
 pip-log.txt
