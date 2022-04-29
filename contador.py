@@ -1,5 +1,6 @@
 from collections import UserList
 from re import I
+from tarfile import TarError
 import requests
 import math
 from getpass import getpass
@@ -246,6 +247,8 @@ def time_counter(fabrica_users, journals_data, data_de_criacao, lista_feriados):
     lista_delta_tempo_pos = []
 
     data_de_entrega = '-' 
+
+    data_de_entrega_f = '-'
     
     for i in range(len(lista_inicios)):
         
@@ -508,18 +511,23 @@ def time_counter(fabrica_users, journals_data, data_de_criacao, lista_feriados):
             lista_delta_tempo_pos.append(tempo_1 + tempo_3 + tempo_2)
 
             data_de_entrega = lista_terminos_date[i]
+
+        print(lista_delta_tempo[i][0])
+
+        if lista_delta_tempo_pos[i] != datetime.timedelta(hours=0):
+            data_de_entrega_f = data_de_entrega 
     
     tempo_total = datetime.timedelta(hours=0)
 
-    if not isinstance(data_de_entrega, str):
-        data_de_entrega = data_de_entrega - datetime.timedelta(hours=3)
+    if not isinstance(data_de_entrega_f, str):
+        data_de_entrega_f = data_de_entrega_f - datetime.timedelta(hours=3)
 
     for tempo in lista_delta_tempo_pos:
 
         tempo_total = tempo_total + tempo
 
 
-    return tempo_total,atuou_em_feriados_ou_finais_de_semana, primeira_atribuicao, data_de_entrega
+    return tempo_total,atuou_em_feriados_ou_finais_de_semana, primeira_atribuicao, data_de_entrega_f
 
 def delta_tempo_inicial(lista_inicios_date):
     tempo_23h = datetime.datetime.combine(lista_inicios_date.date(), datetime.time(hour=23))
@@ -771,7 +779,8 @@ def feriados_lista_out(feriados_lista):
 if __name__ == '__main__':
     #tarefa = 7489
     # Para testes 7612
-    tarefa = 7319
+    # tarefa = 7319
+    tarefa = 7499
 
     feriados_2021=[("01/01/2021", "i"), ("15/02/2021", "i"), ("16/02/2021", "i"), ("17/02/2021", "m"), ("02/04/2021", "i"), ("21/04/2021", "i"), ("01/05/2021", "i"), ("03/06/2021", "i"), ("07/09/2021", "i"), ("12/10/2021", "i"), ("01/11/2021", "i"), ("02/11/2021", "i"), ("15/11/2021", "i"), ("24/12/2021", "v"), ("25/12/2021", "i"), ("31/12/2021", "V")]
     feriados_2022=[("01/01/2022", "i"), ("28/02/2022", "i"), ("01/03/2022", "i"), ("02/03/2022", "m"), ("15/04/2022", "i"), ("21/04/2022", "i"), ("22/04/2022", "i"), ("01/05/2022", "i"), ("16/06/2022", "i"), ("07/09/2022", "i"), ("12/10/2022", "i"), ("28/10/2022", "i"), ("02/11/2022", "i"), ("15/11/2022", "i"), ("25/12/2022", "i")]
