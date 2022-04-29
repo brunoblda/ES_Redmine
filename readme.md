@@ -6,11 +6,10 @@ Após extração, a aplicação realiza a verificação de cumprimento dos SLAs 
 
 O terminal e o arquivo CSV também trazem as datas de atribuição, data de entrega (homologado) e a data de resolvido.
 
-Informa se a tarefa sofreu algum impacto de feriados que ja reduz
-
 O login e senha são as utulizadas para se acessar o Redmine, o sistema não salva nenhuma dessas informações.
 
 Os feriados de 2021 e 2022 estão incluídos no sistema devendo apenas adicionar novas datas de feriados caso os mesmos não estejam na lista de feriados apresentada.
+Os feriados podem ser classificadas em integrais (o SLA de 12h é retirado do dia inteiro), matutinos (somente são considerados os tempos liquidos das 14:00 às 18h) e vespertinos (somente são considerados os tempos líquidos das 08:00 às 14:00))
 
 2021
 * https://www.gov.br/pt-br/noticias/financas-impostos-e-gestao-publica/2021/01/governo-divulga-feriados-e-pontos-facultativos-de-2021
@@ -67,6 +66,8 @@ Exemplo:
 ## Obs:.
 
 Deve-se considerar que o Delta tempo dos SLAs consideram o tempo de 8:00 as 20:00 do dia, resultando em 12:00 de tempo líquido. Assim, valores que informem que o deltaTempo é de 1 day, significam que passou 2 dias (cada dia conta 12h).
+
+O sistema trabalha com o calculo de delta tempos entre o início da atribuição para alguem da fabrica até a mudança de atribuição para qualquer outro usuário.
 
 Por favor informar os inputs conforme indicado em cada pergunta.
 
