@@ -13,10 +13,10 @@ O login e senha são as utulizadas para se acessar o Redmine, o sistema não sal
 Os feriados de 2021 e 2022 estão incluídos no sistema devendo apenas adicionar novas datas de feriados caso os mesmos não estejam na lista de feriados apresentada.
 
 2021
-* https://www.gov.br/pt-br/noticias/financas-impostos-e-gestao-publica/2021/12/governo-federal-divulga-calendario-2022-de-feriados-e-pontos-facultativos
+* https://www.gov.br/pt-br/noticias/financas-impostos-e-gestao-publica/2021/01/governo-divulga-feriados-e-pontos-facultativos-de-2021
 
 2022
-* https://www.gov.br/pt-br/noticias/financas-impostos-e-gestao-publica/2021/01/governo-divulga-feriados-e-pontos-facultativos-de-2021
+* https://www.gov.br/pt-br/noticias/financas-impostos-e-gestao-publica/2021/12/governo-federal-divulga-calendario-2022-de-feriados-e-pontos-facultativos
 * https://www.in.gov.br/en/web/dou/-/portaria-me-n-3.413-de-18-de-abril-de-2022-394165228
 
 ## Executável

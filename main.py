@@ -30,11 +30,11 @@ response = requests.get(url_base + issue7400 + iniciarFiltro + sustentacao + add
 def feriados_lista_out(feriados_lista):
     all_feriados = []
     for feriado in feriados_lista:
-        feriado_split = feriado.split("/")
+        feriado_split = feriado[0].split("/")
         dia = int(feriado_split[0])
         mes = int(feriado_split[1]) 
         ano = int(feriado_split[2])
-        data_feriado = datetime.date(day=dia, month=mes, year=ano)
+        data_feriado = (datetime.date(day=dia, month=mes, year=ano), feriado[1])
         all_feriados.append(data_feriado)
     
     return all_feriados
@@ -43,8 +43,8 @@ if __name__ == '__main__':
     offset_numero = 0
     issues_resolved_list = []
 
-    feriados_2021=["01/01/2021", "15/02/2021", "16/02/2021", "17/02/2021", "02/04/2021", "21/04/2021", "01/05/2021", "03/06/2021", "07/09/2021", "12/10/2021", "28/10/2021", "02/11/2021", "15/11/2021", "24/12/2021", "25/12/2021", "31/12/2021"]
-    feriados_2022=["01/01/2022", "28/02/2022", "01/03/2022", "02/03/2022", "15/04/2022", "21/04/2022", "22/04/2022", "01/05/2022", "16/06/2022", "07/09/2022", "12/10/2022", "28/10/2022", "02/11/2022", "15/11/2022", "25/12/2022"]
+    feriados_2021=[("01/01/2021", "i"), ("15/02/2021", "i"), ("16/02/2021", "i"), ("17/02/2021", "m"), ("02/04/2021", "i"), ("21/04/2021", "i"), ("01/05/2021", "i"), ("03/06/2021", "i"), ("07/09/2021", "i"), ("12/10/2021", "i"), ("28/10/2021", "i"), ("02/11/2021", "i"), ("15/11/2021", "i"), ("24/12/2021", "v"), ("25/12/2021", "i"), ("31/12/2021", "i")]
+    feriados_2022=[("01/01/2022", "i"), ("28/02/2022", "i"), ("01/03/2022", "i"), ("02/03/2022", "m"), ("15/04/2022", "i"), ("21/04/2022", "i"), ("22/04/2022", "i"), ("01/05/2022", "i"), ("16/06/2022", "i"), ("07/09/2022", "i"), ("12/10/2022", "i"), ("28/10/2022", "i"), ("02/11/2022", "i"), ("15/11/2022", "i"), ("25/12/2022", "i")]
 
     # percorre por 10 paginas com 50 issues cada
     percorre_quantas_paginas = 10
@@ -103,13 +103,9 @@ if __name__ == '__main__':
             
             data_feriado_date = datetime.date(int(split_data[2]), int(split_data[1]), int(split_data[0]))
 
-            """
-            integral = True
-            feriado_integral = input("Feriado o dia inteiro (s/n): ")
-            if feriado_integral == 'n':
-                integral = False 
-            """
-            dias_feriados.append(data_feriado_date )
+            feriado_periodo = input("Feriado é integral, matutino ou vespertino (i,m,v): ")
+            print("")
+            dias_feriados.append((data_feriado_date, feriado_periodo) )
     
     dias_feriados.extend(feriados_lista_out(feriados_2021))
     dias_feriados.extend(feriados_lista_out(feriados_2022))
