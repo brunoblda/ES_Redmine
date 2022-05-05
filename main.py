@@ -45,6 +45,7 @@ if __name__ == '__main__':
 
     feriados_2021=[("01/01/2021", "i"), ("15/02/2021", "i"), ("16/02/2021", "i"), ("17/02/2021", "m"), ("02/04/2021", "i"), ("21/04/2021", "i"), ("01/05/2021", "i"), ("03/06/2021", "i"), ("07/09/2021", "i"), ("12/10/2021", "i"), ("28/10/2021", "i"), ("02/11/2021", "i"), ("15/11/2021", "i"), ("24/12/2021", "v"), ("25/12/2021", "i"), ("31/12/2021", "i")]
     feriados_2022=[("01/01/2022", "i"), ("28/02/2022", "i"), ("01/03/2022", "i"), ("02/03/2022", "m"), ("15/04/2022", "i"), ("21/04/2022", "i"), ("22/04/2022", "i"), ("01/05/2022", "i"), ("16/06/2022", "i"), ("07/09/2022", "i"), ("12/10/2022", "i"), ("28/10/2022", "i"), ("02/11/2022", "i"), ("15/11/2022", "i"), ("25/12/2022", "i")]
+    moving_data_center_2022=[("28/01/2022", "i"), ("29/01/2022", "i"), ("30/01/2022", "i"), ("31/01/2022", "i"), ("01/02/2022", "i"), ("02/02/2022", "i"), ("03/02/2022", "i")]
 
     # percorre por 10 paginas com 50 issues cada
     percorre_quantas_paginas = 10
@@ -82,6 +83,10 @@ if __name__ == '__main__':
     print("")
     print(feriados_2022)
     print("")
+    print("Moving Data Center 2022: ")
+    print("")
+    print(moving_data_center_2022)
+    print("")
 
     tem_feriado = input("Você gostaria de adicionar mais algum feriado além dos mencionados acima? (s/n): ")
     print("")
@@ -109,6 +114,7 @@ if __name__ == '__main__':
     
     dias_feriados.extend(feriados_lista_out(feriados_2021))
     dias_feriados.extend(feriados_lista_out(feriados_2022))
+    dias_feriados.extend(feriados_lista_out(moving_data_center_2022))
 
     for i in range(percorre_quantas_paginas):
 

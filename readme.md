@@ -17,6 +17,7 @@ Os feriados podem ser classificadas em integrais (o SLA de 12h é retirado do di
 2022
 * https://www.gov.br/pt-br/noticias/financas-impostos-e-gestao-publica/2021/12/governo-federal-divulga-calendario-2022-de-feriados-e-pontos-facultativos
 * https://www.in.gov.br/en/web/dou/-/portaria-me-n-3.413-de-18-de-abril-de-2022-394165228
+* Adicionado os dias de moving do data center (28/01/2022 à 03/02/2022)
 
 ## Executável
 
