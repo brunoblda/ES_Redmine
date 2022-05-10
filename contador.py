@@ -792,7 +792,8 @@ if __name__ == '__main__':
     # tarefa = 7319
     # tarefa = 7499
     #tarefa = 7358
-    tarefa = 7485
+    #tarefa = 7485
+    tarefa = 7561
 
     feriados_2021=[("01/01/2021", "i"), ("15/02/2021", "i"), ("16/02/2021", "i"), ("17/02/2021", "m"), ("02/04/2021", "i"), ("21/04/2021", "i"), ("01/05/2021", "i"), ("03/06/2021", "i"), ("07/09/2021", "i"), ("12/10/2021", "i"), ("01/11/2021", "i"), ("02/11/2021", "i"), ("15/11/2021", "i"), ("24/12/2021", "v"), ("25/12/2021", "i"), ("31/12/2021", "V")]
     feriados_2022=[("01/01/2022", "i"), ("28/02/2022", "i"), ("01/03/2022", "i"), ("02/03/2022", "m"), ("15/04/2022", "i"), ("21/04/2022", "i"), ("22/04/2022", "i"), ("01/05/2022", "i"), ("16/06/2022", "i"), ("07/09/2022", "i"), ("12/10/2022", "i"), ("28/10/2022", "i"), ("02/11/2022", "i"), ("15/11/2022", "i"), ("25/12/2022", "i")]
@@ -834,8 +835,8 @@ if __name__ == '__main__':
 
     dict_all_users = counting_users(auth_user)
 
-    # leandro, rhoxanna, mauricio, cristiano, romao, gestor fabrica, desenvolvedor fabrica, sabino
-    usuarios_da_fabrica = ['204', '279', '269', '259', '250', '165', '164', '272']
+    # leandro, rhoxanna, mauricio, cristiano, romao, gestor fabrica, desenvolvedor fabrica, sabino, michel
+    usuarios_da_fabrica = ['204', '279', '269', '259', '250', '165', '164', '272', '167']
     
     print("Usuários da Fabrica de Software considerados para a verificação do SLA:")
     print("")

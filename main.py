@@ -48,7 +48,7 @@ if __name__ == '__main__':
     moving_data_center_2022=[("28/01/2022", "i"), ("29/01/2022", "i"), ("30/01/2022", "i"), ("31/01/2022", "i"), ("01/02/2022", "i"), ("02/02/2022", "i"), ("03/02/2022", "i")]
 
     # percorre por 10 paginas com 50 issues cada
-    percorre_quantas_paginas = 10
+    percorre_quantas_paginas = 20
 
     url_login = 'https://redmine.iphan.gov.br/redmine/issues.json' 
 
@@ -181,8 +181,8 @@ if __name__ == '__main__':
     print("usuários da Fabrica de Software considerados para a verificação do SLA:")
     print("")
 
-    # leandro, rhoxanna, mauricio, cristiano, romao, gestor fabrica, desenvolvedor fabrica, sabino
-    usuarios_da_fabrica = ['204', '279', '269', '259', '250', '165', '164', '272']
+    # leandro, rhoxanna, mauricio, cristiano, romao, gestor fabrica, desenvolvedor fabrica, sabino, michel
+    usuarios_da_fabrica = ['204', '279', '269', '259', '250', '165', '164', '272', '167']
 
     dict_all_users = contador.counting_users(auth_user)
     for usuario in usuarios_da_fabrica:
