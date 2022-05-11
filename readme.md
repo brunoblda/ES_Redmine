@@ -19,6 +19,16 @@ Os feriados podem ser classificadas em integrais (o SLA de 12h é retirado do di
 * https://www.in.gov.br/en/web/dou/-/portaria-me-n-3.413-de-18-de-abril-de-2022-394165228
 * Adicionado os dias de moving do data center (28/01/2022 à 03/02/2022)
 
+Documentação da Api Rest do Redmine:
+
+* https://www.redmine.org/projects/redmine/wiki/rest_api
+
+Usuários da fábrica considerados na contagem do tempo líquido:
+
+> Nomes: leandro, rhoxanna, mauricio, cristiano, romao, gestor fabrica, desenvolvedor fabrica, sabino, michel, henrique, testador fabrica
+
+> Ids: 204, 279, 269, 259, 250, 165, 164, 272, 167, 277, 244
+
 ## Executável
 
 Para se criar um arquivo executavel, realizar a seguinte procedimento:
