@@ -261,6 +261,8 @@ def time_counter(fabrica_users, journals_data, data_de_criacao, lista_feriados):
     data_de_entrega_f = '-'
     
     for i in range(len(lista_inicios)):
+
+        print(lista_delta_tempo[i])
         
         if lista_delta_tempo[i][0].days < 2:
 
@@ -276,7 +278,7 @@ def time_counter(fabrica_users, journals_data, data_de_criacao, lista_feriados):
                                 for dia_de_fim_de_semana in lista_delta_tempo[i][j]:
                                     if dia_de_fim_de_semana == lista_inicios_date[i].date():
                                         
-                                        tempo_2 = delta_tempo_termino(lista_terminos_date[i])
+                                        tempo_2, data = delta_tempo_termino(lista_terminos_date[i])
                                         
                                         resposta = tempo_2 + datetime.timedelta(hours=12)
 
@@ -301,7 +303,7 @@ def time_counter(fabrica_users, journals_data, data_de_criacao, lista_feriados):
 
                                         if feriado[0] == lista_inicios_date[i].date():
 
-                                            tempo_2 = delta_tempo_termino(lista_terminos_date[i])
+                                            tempo_2, data = delta_tempo_termino(lista_terminos_date[i])
 
                                             resposta = tempo_2 + datetime.timedelta(hours=12)
 
@@ -323,9 +325,11 @@ def time_counter(fabrica_users, journals_data, data_de_criacao, lista_feriados):
 
                                         if feriado[0] == lista_inicios_date[i].date():
 
-                                            tempo_2 = delta_tempo_termino_parcial(lista_terminos_date[i], feriado[1])
+                                            tempo_1 = delta_tempo_inicial_parcial(lista_inicios_date[i], feriado[1])
+                                            
+                                            tempo_2, data = delta_tempo_termino(lista_terminos_date[i])
 
-                                            resposta = tempo_2 + datetime.timedelta(hours=12)
+                                            resposta = tempo_1 + tempo_2
 
                                             lista_delta_tempo_pos.append(resposta)
                                             
@@ -333,22 +337,23 @@ def time_counter(fabrica_users, journals_data, data_de_criacao, lista_feriados):
                                         
                                         if feriado[0] == lista_terminos_date[i].date():
 
-                                            tempo_1 = delta_tempo_inicial_parcial(lista_inicios_date[i], feriado[1])
+                                            tempo_1 = delta_tempo_inicial(lista_inicios_date[i])
 
-                                            resposta = tempo_1 + datetime.timedelta(hours=12)
+                                            tempo_2, data_de_entrega = delta_tempo_termino_parcial(lista_terminos_date[i], feriado[i])
+
+                                            resposta = tempo_1 + tempo_2
 
                                             lista_delta_tempo_pos.append(resposta)
-
-                                            data_de_entrega = datetime.datetime.combine(lista_inicios_date[i].date(), datetime.time(hour=20)) 
 
                 if not resposta:
 
                     tempo_1 = delta_tempo_inicial(lista_inicios_date[i]) 
-                    tempo_2 = delta_tempo_termino(lista_terminos_date[i]) 
+                    tempo_2, data_de_entrega= delta_tempo_termino(lista_terminos_date[i]) 
 
                     lista_delta_tempo_pos.append(tempo_1 + tempo_2)
 
-                    data_de_entrega = lista_terminos_date[i]
+                    print(data_de_entrega)
+
 
             if lista_delta_tempo[i][0].days == 0:
 
@@ -363,7 +368,7 @@ def time_counter(fabrica_users, journals_data, data_de_criacao, lista_feriados):
 
                                     if dia_de_fim_de_semana == lista_inicios_date[i].date():
 
-                                        tempo_2 = delta_tempo_termino(lista_terminos_date[i])
+                                        tempo_2, data = delta_tempo_termino(lista_terminos_date[i])
 
                                         resposta = tempo_2         
 
@@ -388,7 +393,7 @@ def time_counter(fabrica_users, journals_data, data_de_criacao, lista_feriados):
 
                                         if feriado[0] == lista_inicios_date[i].date():
 
-                                            tempo_2 = delta_tempo_termino(lista_terminos_date[i])
+                                            tempo_2, data = delta_tempo_termino(lista_terminos_date[i])
 
                                             resposta = tempo_2
 
@@ -409,23 +414,23 @@ def time_counter(fabrica_users, journals_data, data_de_criacao, lista_feriados):
 
                                         if feriado[0] == lista_inicios_date[i].date():
 
-                                            tempo_2 = delta_tempo_termino_parcial(lista_terminos_date[i], feriado[1])
+                                            tempo_1 = delta_tempo_inicial_parcial(lista_inicios_date[i], feriado[1])
 
-                                            resposta = tempo_2  
+                                            resposta = tempo_1  
 
                                             lista_delta_tempo_pos.append(resposta)
                                             
                                             data_de_entrega = lista_terminos_date[i]
                                         
-                                        if feriado[0] == lista_terminos_date[i].date():
+                                        elif feriado[0] == lista_terminos_date[i].date():
 
-                                            tempo_1 = delta_tempo_inicial_parcial(lista_inicios_date[i], feriado[1])
+                                            tempo_2, data = delta_tempo_termino_parcial(lista_terminos_date[i], feriado[1])
 
-                                            resposta = tempo_1 
+                                            resposta = tempo_2 
 
                                             lista_delta_tempo_pos.append(resposta)
 
-                                            data_de_entrega = datetime.datetime.combine(lista_inicios_date[i].date(), datetime.time(hour=20)) 
+                                            data_de_entrega = data 
 
                 if not resposta:
                     if lista_terminos_date[i] > datetime.datetime.combine(lista_terminos_date[i].date(), datetime.time(hour=20)): 
@@ -434,7 +439,8 @@ def time_counter(fabrica_users, journals_data, data_de_criacao, lista_feriados):
                         data_de_entrega = datetime.datetime.combine(lista_terminos_date[i].date(), datetime.time(hour=20)) 
 
                     elif lista_inicios_date[i] < datetime.datetime.combine(lista_inicios_date[i].date(), datetime.time(hour=8)): 
-                        lista_delta_tempo_pos.append(delta_tempo_termino(lista_terminos_date[i]))   
+                        delta_tempo_param , data = delta_tempo_termino(lista_terminos_date[i])
+                        lista_delta_tempo_pos.append(delta_tempo_param)   
 
                         data_de_entrega = lista_terminos_date[i]
 
@@ -466,7 +472,7 @@ def time_counter(fabrica_users, journals_data, data_de_criacao, lista_feriados):
                             for dia_de_fim_de_semana in lista_delta_tempo[i][j]:
                                 if dia_de_fim_de_semana == lista_inicios_date[i].date():
                                     
-                                    tempo_3 = delta_tempo_termino(lista_terminos_date[i])
+                                    tempo_3, data = delta_tempo_termino(lista_terminos_date[i])
                                     
                                     data_de_entrega = lista_terminos_date[i]
                                 
@@ -483,7 +489,7 @@ def time_counter(fabrica_users, journals_data, data_de_criacao, lista_feriados):
 
                                     if feriado[0] == lista_inicios_date[i].date():
 
-                                        tempo_3 = delta_tempo_termino(lista_terminos_date[i])
+                                        tempo_3, data = delta_tempo_termino(lista_terminos_date[i])
 
                                         data_de_entrega = lista_terminos_date[i]
                                     
@@ -499,17 +505,15 @@ def time_counter(fabrica_users, journals_data, data_de_criacao, lista_feriados):
 
                                     if feriado[0] == lista_inicios_date[i].date():
 
-                                        tempo_3 = delta_tempo_termino_parcial(lista_terminos_date[i], feriado[1])
+                                        tempo_1  = delta_tempo_inicial_parcial(lista_inicios_date[i], feriado[1])
 
                                         data_de_entrega = lista_terminos_date[i]
                                     
                                     elif feriado[0] == lista_terminos_date[i].date():
 
-                                        tempo_1 = delta_tempo_inicial_parcial(lista_inicios_date[i], feriado[1])
+                                        tempo_3, data = delta_tempo_termino_parcial(lista_terminos_date[i], feriado[1])
 
-                                        resposta = tempo_1 
-
-                                        data_de_entrega = datetime.datetime.combine(lista_inicios_date[i].date(), datetime.time(hour=20))
+                                        data_de_entrega = data
 
                                     else:
                                         tempo_2_count = tempo_2_count + 1
@@ -519,7 +523,7 @@ def time_counter(fabrica_users, journals_data, data_de_criacao, lista_feriados):
                     
             if not tempo_3:
 
-                tempo_3 = delta_tempo_termino(lista_terminos_date[i])
+                tempo_3, data = delta_tempo_termino(lista_terminos_date[i])
 
             tempo_2 = datetime.timedelta(hours=12)*(lista_delta_tempo[i][0] - datetime.timedelta(days=1)).days
 
@@ -531,6 +535,8 @@ def time_counter(fabrica_users, journals_data, data_de_criacao, lista_feriados):
 
             data_de_entrega = lista_terminos_date[i]
 
+        print(lista_delta_tempo_pos)
+
         # data_de_entrega_f pega a data do chamado antes do status virar homologado
         if lista_delta_tempo_pos[i] != datetime.timedelta(hours=0):
             data_de_entrega_f = data_de_entrega 
@@ -538,6 +544,8 @@ def time_counter(fabrica_users, journals_data, data_de_criacao, lista_feriados):
     tempo_total = datetime.timedelta(hours=0)
 
     for tempo in lista_delta_tempo_pos:
+
+        print(tempo)
 
         tempo_total = tempo_total + tempo
 
@@ -554,34 +562,54 @@ def delta_tempo_inicial(lista_inicios_date):
     return tempo_1
 
 def delta_tempo_termino(lista_terminos_date):
+
     tempo_8h = datetime.datetime.combine(lista_terminos_date.date(), datetime.time(hour=8))
     tempo_2 = lista_terminos_date - tempo_8h
+    data_termino = lista_terminos_date 
+
     if tempo_2.days < 0:
         tempo_2 = datetime.timedelta(hours=0)
+        data_termino = datetime.datetime.combine(lista_terminos_date.date(), datetime.time(hour=8))
+
     elif tempo_2.seconds > 12*3600:
         tempo_2 = datetime.timedelta(hours=12)
+        data_termino = datetime.datetime.combine(lista_terminos_date.date(), datetime.time(hour=20))
 
-    return tempo_2
+
+    return tempo_2, data_termino
 
 def delta_tempo_termino_parcial(lista_terminos_date, tipo):
+
+    data_termino = 0
 
     if tipo == "m":
         tempo_14h = datetime.datetime.combine(lista_terminos_date.date(), datetime.time(hour=14))
         tempo_2 = lista_terminos_date - tempo_14h
+        data_termino = lista_terminos_date
+
         if tempo_2.days < 0:
             tempo_2 = datetime.timedelta(hours=0)
+            data_termino = datetime.datetime.combine(lista_terminos_date.date(), datetime.time(hour=14))
+
         elif tempo_2.seconds > 6*3600:
             tempo_2 = datetime.timedelta(hours=6)
+            data_termino = datetime.datetime.combine(lista_terminos_date.date(), datetime.time(hour=20))
 
     if tipo == "v":
         tempo_8h = datetime.datetime.combine(lista_terminos_date.date(), datetime.time(hour=8))
         tempo_2 = lista_terminos_date - tempo_8h
+        data_termino = lista_terminos_date
+
         if tempo_2.days < 0:
             tempo_2 = datetime.timedelta(hours=0)
+            data_termino = datetime.datetime.combine(lista_terminos_date.date(), datetime.time(hour=8))
+
         elif tempo_2.seconds > 6*3600:
             tempo_2 = datetime.timedelta(hours=6)
+            data_termino = datetime.datetime.combine(lista_terminos_date.date(), datetime.time(hour=14))
 
-    return tempo_2
+
+    return tempo_2, data_termino
 
 def delta_tempo_inicial_parcial(lista_inicios_date, tipo):
     if tipo == "m":
@@ -793,7 +821,11 @@ if __name__ == '__main__':
     # tarefa = 7499
     #tarefa = 7358
     #tarefa = 7485
-    tarefa = 7561
+    #tarefa = 7561
+    # tarefa = 7496
+
+    # data de entrega é 00:36
+    tarefa = 7516
 
     feriados_2021=[("01/01/2021", "i"), ("15/02/2021", "i"), ("16/02/2021", "i"), ("17/02/2021", "m"), ("02/04/2021", "i"), ("21/04/2021", "i"), ("01/05/2021", "i"), ("03/06/2021", "i"), ("07/09/2021", "i"), ("12/10/2021", "i"), ("01/11/2021", "i"), ("02/11/2021", "i"), ("15/11/2021", "i"), ("24/12/2021", "v"), ("25/12/2021", "i"), ("31/12/2021", "V")]
     feriados_2022=[("01/01/2022", "i"), ("28/02/2022", "i"), ("01/03/2022", "i"), ("02/03/2022", "m"), ("15/04/2022", "i"), ("21/04/2022", "i"), ("22/04/2022", "i"), ("01/05/2022", "i"), ("16/06/2022", "i"), ("07/09/2022", "i"), ("12/10/2022", "i"), ("28/10/2022", "i"), ("02/11/2022", "i"), ("15/11/2022", "i"), ("25/12/2022", "i")]
