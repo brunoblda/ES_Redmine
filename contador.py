@@ -262,8 +262,6 @@ def time_counter(fabrica_users, journals_data, data_de_criacao, lista_feriados):
     
     for i in range(len(lista_inicios)):
 
-        print(lista_delta_tempo[i])
-        
         if lista_delta_tempo[i][0].days < 2:
 
             if lista_delta_tempo[i][0].days == 1:
@@ -345,9 +343,6 @@ def time_counter(fabrica_users, journals_data, data_de_criacao, lista_feriados):
                     tempo_2, data_de_entrega = delta_tempo_termino(lista_terminos_date[i]) 
 
                     lista_delta_tempo_pos.append(tempo_1 + tempo_2)
-
-                    print(data_de_entrega)
-
 
             if lista_delta_tempo[i][0].days == 0:
 
@@ -517,8 +512,6 @@ def time_counter(fabrica_users, journals_data, data_de_criacao, lista_feriados):
 
             lista_delta_tempo_pos.append(tempo_1 + tempo_3 + tempo_2)
 
-        print(lista_delta_tempo_pos)
-
         # data_de_entrega_f pega a data do chamado antes do status virar homologado
         if lista_delta_tempo_pos[i] != datetime.timedelta(hours=0):
             data_de_entrega_f = data_de_entrega 
@@ -527,10 +520,13 @@ def time_counter(fabrica_users, journals_data, data_de_criacao, lista_feriados):
 
     for tempo in lista_delta_tempo_pos:
 
-        print(tempo)
-
         tempo_total = tempo_total + tempo
-
+    
+    # Retira o ultimo tempo (Para evitar de se pegar o tempo da nota que somente é utilizada para dizer que mudou o status para homologado)(o problema é se passar outras situacoes)
+    """
+    for tempo in range(len(lista_delta_tempo_pos)-1):
+        tempo_total = tempo_total + lista_delta_tempo_pos[tempo]
+    """
     return tempo_total,atuou_em_feriados_ou_finais_de_semana, primeira_atribuicao, data_de_entrega_f
 
 def delta_tempo_inicial(lista_inicios_date):
