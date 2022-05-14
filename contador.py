@@ -553,7 +553,6 @@ def delta_tempo_termino(lista_terminos_date):
         tempo_2 = datetime.timedelta(hours=12)
         data_termino = datetime.datetime.combine(lista_terminos_date.date(), datetime.time(hour=20))
 
-
     return tempo_2, data_termino
 
 def delta_tempo_termino_parcial(lista_terminos_date, tipo):
@@ -585,7 +584,6 @@ def delta_tempo_termino_parcial(lista_terminos_date, tipo):
         elif tempo_2.seconds > 6*3600:
             tempo_2 = datetime.timedelta(hours=6)
             data_termino = datetime.datetime.combine(lista_terminos_date.date(), datetime.time(hour=14))
-
 
     return tempo_2, data_termino
 
@@ -769,16 +767,51 @@ def execute(tarefa, feriados, auth_params, usuarios_da_fabrica):
             sla_result = 2
         else:
             print('Compriu o SLA do chamado de prioridade {}, executando em {}'
-            .format(types_of_priorities[str(journals_priority)],delta_time_sla))
+            .format(types_of_priorities[str(journals_priority)],to_hours(delta_time_sla)))
             print()
 
     else:
         sla_result = 0
         print('Não compriu o SLA do chamado de prioridade {}, passando em {}'
-        .format(types_of_priorities[str(journals_priority)],diff_sla))
+        .format(types_of_priorities[str(journals_priority)],to_hours(diff_sla)))
         print()
 
     return  types_of_priorities[str(journals_priority)], sla_result, delta_time_sla, diff_sla, atuou_em_feriados_ou_finais_de_semana, project, primeira_atribuicao, data_de_entrega, data_resolvido
+
+def to_hours(string_data):
+
+    string_data = str(string_data)
+
+    tamanho = len(string_data)
+    horas_formatada = string_data
+
+    dias_list = []
+    dias_str = ""
+    dias_num = 0
+    i = 0
+
+    if tamanho > 8:
+
+        while string_data[i] != " ":
+            dias_list.append(string_data[i])
+            i += 1
+
+        for letra in dias_list:
+            dias_str = dias_str + str(letra)  
+        
+        dias_num = int(dias_str)
+
+        divisao = string_data.split(", ")
+
+        hours_minutes_seconds = divisao[1].split(":")
+
+        dias_totais_pre = 24 * dias_num
+
+        dias_totais_pos = dias_totais_pre + int(hours_minutes_seconds[0])
+
+        horas_formatada = "{}:{}:{}".format(str(dias_totais_pos), str(hours_minutes_seconds[1]), str(hours_minutes_seconds[2]))
+
+    return horas_formatada
 
 def feriados_lista_out(feriados_lista):
     all_feriados = []
@@ -803,7 +836,10 @@ if __name__ == '__main__':
     # tarefa = 7496
 
     # data de entrega é 00:36
-    tarefa = 7516
+    #tarefa = 7516
+
+    #tarefa = 7566
+    tarefa = 7556
 
     feriados_2021=[("01/01/2021", "i"), ("15/02/2021", "i"), ("16/02/2021", "i"), ("17/02/2021", "m"), ("02/04/2021", "i"), ("21/04/2021", "i"), ("01/05/2021", "i"), ("03/06/2021", "i"), ("07/09/2021", "i"), ("12/10/2021", "i"), ("01/11/2021", "i"), ("02/11/2021", "i"), ("15/11/2021", "i"), ("24/12/2021", "v"), ("25/12/2021", "i"), ("31/12/2021", "V")]
     feriados_2022=[("01/01/2022", "i"), ("28/02/2022", "i"), ("01/03/2022", "i"), ("02/03/2022", "m"), ("15/04/2022", "i"), ("21/04/2022", "i"), ("22/04/2022", "i"), ("01/05/2022", "i"), ("16/06/2022", "i"), ("07/09/2022", "i"), ("12/10/2022", "i"), ("28/10/2022", "i"), ("02/11/2022", "i"), ("15/11/2022", "i"), ("25/12/2022", "i")]
