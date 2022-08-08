@@ -181,8 +181,8 @@ if __name__ == '__main__':
     print("usuários da Fabrica de Software considerados para a verificação do SLA:")
     print("")
 
-    # leandro, rhoxanna, mauricio, cristiano, romao, gestor fabrica, desenvolvedor fabrica, sabino, michel, henrique, testador fabrica
-    usuarios_da_fabrica = ['204', '279', '269', '259', '250', '165', '164', '272', '167', '277', '244']
+    # leandro, rhoxanna, mauricio, cristiano, romao, gestor fabrica, desenvolvedor fabrica, sabino, michel, henrique, testador fabrica, valter, domingos, vinicius
+    usuarios_da_fabrica = ['204', '279', '269', '259', '250', '165', '164', '272', '167', '277', '244', '290', '289', '292']
 
     dict_all_users = contador.counting_users(auth_user)
     for usuario in usuarios_da_fabrica:
