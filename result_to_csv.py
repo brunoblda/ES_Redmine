@@ -12,27 +12,40 @@ def result_to_csv(list_issues, list_results):
         for i in range(len(list_issues)):
 
             passou_result = "-"
-            sla_result = "FALSE"
+            sla_result = "Não"
+            tempo_liquido = ""
+            prioridade_tipo = list_results[i][0] 
 
             if list_results[i][1] == 0 :
                 passou_result = to_hours(list_results[i][3]) 
 
             if list_results[i][1] == 1 :
-                sla_result = "TRUE"    
+                sla_result = "Sim"    
             
             if list_results[i][1] == 2 :
                 sla_result = "NAO ATUOU"
 
+            if str(prioridade_tipo) == "Baixa":
+               tempo_liquido = "36h" 
+
+            elif str(prioridade_tipo) == "Normal":
+                tempo_liquido = "24h"
+
+            else:
+                tempo_liquido = "12h"
+                prioridade_tipo = "Alta"
+            
             dict_row = {
-                "Tarefa": str(list_issues[i]),
                 "Sistema": str(list_results[i][5]),
-                "Prioridade":str(list_results[i][0]),
-                "SLA": sla_result,
+                "Tarefa": str(list_issues[i]),
+                "Prioridade":str(prioridade_tipo),
                 "Data de atribuicao": str(list_results[i][6]),
-                "Data de entrega": str(list_results[i][7]),
-                "Data resolvido": str(list_results[i][8]),
+                "Tempo Líquído":str(tempo_liquido),
+                "Data de entrega para Homologação": str(list_results[i][7]),
+                "Data de alterado para Resolvido": str(list_results[i][8]),
                 "Delta_tempo":to_hours(list_results[i][2]),
-                "Passou": passou_result,
+                "IPS(horas úteis de atraso)": passou_result,
+                "Nível de serviço dentro do acordo?": sla_result,
                 "Feriado":str(list_results[i][4]) 
                 }
             
@@ -47,7 +60,8 @@ def result_to_csv(list_issues, list_results):
             csv_name = 'sla_results.csv'
 
         with open(csv_name, 'w', newline='') as csvfile:
-            fieldnames = ['Tarefa', 'Sistema', 'Prioridade', 'SLA', 'Data de atribuicao', 'Data de entrega', 'Data resolvido', 'Delta_tempo','Passou', 'Feriado']
+            fieldnames = ['Sistema', 'Tarefa', 'Prioridade', 'Data de atribuicao', 'Tempo Líquído', 'Data de entrega para Homologação',
+             'Data de alterado para Resolvido', 'Delta_tempo','IPS(horas úteis de atraso)', 'Nível de serviço dentro do acordo?', 'Feriado']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
             writer.writeheader()

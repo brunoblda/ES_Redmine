@@ -25,9 +25,9 @@ Documentação da Api Rest do Redmine:
 
 Usuários da fábrica considerados na contagem do tempo líquido:
 
-> Nomes: leandro, rhoxanna, mauricio, cristiano, romao, gestor fabrica, desenvolvedor fabrica, sabino, michel, henrique, testador fabrica
+> Nomes: leandro, rhoxanna, mauricio, cristiano, romao, gestor fabrica, desenvolvedor fabrica, sabino, michel, henrique, testador fabrica, valter, domingos e vinicius
 
-> Ids: 204, 279, 269, 259, 250, 165, 164, 272, 167, 277, 244
+> Ids: 204, 279, 269, 259, 250, 165, 164, 272, 167, 277, 244, 290, 289 e 292
 
 ## Executável
 
